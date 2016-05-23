@@ -7,8 +7,8 @@ def server_loop(local_host, local_port, remote_host, remote_port, receive_first)
 	server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 	try:
-		server.bind(local_host, local_port)
-	except:
+		server.bind((local_host, local_port))
+	except Exception:
 		print "[!!] Failed to listen on %s:%d" %(local_host, local_port)
 		print "[!!] Check for other listening sockets or correct permissions."
 		sys.exit(0)
@@ -32,7 +32,7 @@ def server_loop(local_host, local_port, remote_host, remote_port, receive_first)
 
 def main():
 
-	if len(sys.argv[1:]) ! = 5:
+	if len(sys.argv[1:]) != 5:
 		print "Usage: ./proxy [localhost] [localport] [remotehost] [remoteport] [receive_first]"
 		print "Example: ./proxy.py 127.0.0.1 9000 10.12.132.1 9000 True"
 		exit(0)
@@ -133,6 +133,44 @@ def hexdump(src, length = 16):
 def receive_from(connection):
 
 	buffer = ""
+
+	# set a 2 second timeout; depending on your target, 
+	# this may need to be adjusted
+	connection.settimeout(2)
+
+	try:
+
+		# keep reading into the buffer until there is no
+		# more data or time out
+
+		while True:
+			data = connection.recv(4096)
+
+			if not data:
+				break
+
+			buffer += data
+
+	except:
+		pass
+
+	return buffer
+
+# modify any requests destined for the remote host
+def request_handler(buffer):
+	#perform packet modifications
+	return buffer
+
+#modify any response destined for the local host
+def reponse_handler(buffer):
+	#perform packet modifications
+	return buffer
+
+
+
+if __name__ == '__main__':
+	main()
+
 
 
 
