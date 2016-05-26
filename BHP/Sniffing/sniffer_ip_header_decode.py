@@ -7,7 +7,7 @@ from ctypes import *
 host = "127.0.0.1"
 
 # IP header
-class IP(struct):
+class IP(Structure):
 	_fields_ = [
 	("ihl",			c_ubyte, 4),
 	("version",		c_ubyte, 4),
@@ -27,7 +27,7 @@ class IP(struct):
 	def __init__(self,socket_buffer=None):
 
 		#map protocol constants to their names
-		self.protocol_map = {1:"ICMP", 6:"TCCP", 17:"UDP"}
+		self.protocol_map = {1:"ICMP", 6:"TCP", 17:"UDP"}
 
 		#human readable IP addresses
 		self.src_address = socket.inet_ntoa(struct.pack("<L",self.src))
