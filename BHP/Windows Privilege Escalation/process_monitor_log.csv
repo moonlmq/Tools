@@ -1,0 +1,40 @@
+Time,User,Executable,CommandLine,PID,Parent PID,Privileges
+20160616170425.274429+480,NT AUTHORITY\SYSTEM,D:\OTNM\md\bin\OtnmCfgServer.exe,D:\OTNM\md\bin\OtnmCfgServer.exe -debug --Ice.Config=D:\\OTNM\\md\\etc\\ice\\db\\node/servers/Server-CfgServer/config/config,14264,7648,N/A
+
+20160616170427.227541+480,NT AUTHORITY\SYSTEM,C:\Windows\system32\conhost.exe,\??\C:\Windows\system32\conhost.exe "-67918728-7515641118154959961500370127-201695736011985252541022059979-1529755060,14360,624,N/A
+
+20160616170427.204540+480,NT AUTHORITY\SYSTEM,D:\OTNM\md\bin\OtnmCfgServer.exe,D:\OTNM\md\bin\OtnmCfgServer.exe -debug --Ice.Config=D:\\OTNM\\md\\etc\\ice\\db\\node/servers/Server-CfgServer/config/config,4452,7648,N/A
+
+20160616170428.615620+480,NT AUTHORITY\SYSTEM,D:\OTNM\md\bin\OtnmCfgServer.exe,D:\OTNM\md\bin\OtnmCfgServer.exe -debug --Ice.Config=D:\\OTNM\\md\\etc\\ice\\db\\node/servers/Server-CfgServer/config/config,15268,7648,N/A
+
+20160616170428.629621+480,NT AUTHORITY\SYSTEM,C:\Windows\system32\conhost.exe,\??\C:\Windows\system32\conhost.exe "19026942081893802938-260754631689139593971556269-1116867558226251231-467653883,7044,624,N/A
+
+20160616170430.399722+480,NT AUTHORITY\SYSTEM,D:\OTNM\md\bin\OtnmCfgServer.exe,D:\OTNM\md\bin\OtnmCfgServer.exe -debug --Ice.Config=D:\\OTNM\\md\\etc\\ice\\db\\node/servers/Server-CfgServer/config/config,14360,7648,N/A
+
+20160616170430.416723+480,NT AUTHORITY\SYSTEM,C:\Windows\system32\conhost.exe,\??\C:\Windows\system32\conhost.exe "5921571728265468-18880537286065792401427391200-18368310539644097402139647962,4452,624,N/A
+
+20160616170437.281116+480,NT AUTHORITY\SYSTEM,D:\OTNM\md\bin\OtnmCfgServer.exe,D:\OTNM\md\bin\OtnmCfgServer.exe -debug --Ice.Config=D:\\OTNM\\md\\etc\\ice\\db\\node/servers/Server-CfgServer/config/config,10900,7648,N/A
+
+20160616170437.298117+480,NT AUTHORITY\SYSTEM,C:\Windows\system32\conhost.exe,\??\C:\Windows\system32\conhost.exe "7227867-1916215196438926309-1476203233-861348776793298934-12352637791497796461,15048,624,N/A
+
+20160616170438.123164+480,NT AUTHORITY\SYSTEM,C:\Windows\system32\conhost.exe,\??\C:\Windows\system32\conhost.exe "1979281106-1945077612-1111805264774140723135715211366092964-1116273833819567127,12872,624,N/A
+
+20160616170438.075161+480,NT AUTHORITY\SYSTEM,D:\OTNM\md\bin\OtnmCfgServer.exe,D:\OTNM\md\bin\OtnmCfgServer.exe -debug --Ice.Config=D:\\OTNM\\md\\etc\\ice\\db\\node/servers/Server-CfgServer/config/config,14536,7648,N/A
+
+20160616170439.797260+480,NT AUTHORITY\SYSTEM,D:\OTNM\md\bin\OtnmCfgServer.exe,D:\OTNM\md\bin\OtnmCfgServer.exe -debug --Ice.Config=D:\\OTNM\\md\\etc\\ice\\db\\node/servers/Server-CfgServer/config/config,14468,7648,N/A
+
+20160616170439.818261+480,NT AUTHORITY\SYSTEM,C:\Windows\system32\conhost.exe,\??\C:\Windows\system32\conhost.exe "-516943875-2037327728-1037548823474708068-2718309661901961919478246804-849654741,9568,624,N/A
+
+20160616170441.232342+480,NT AUTHORITY\SYSTEM,C:\Windows\system32\conhost.exe,\??\C:\Windows\system32\conhost.exe "2058681515-1660115388-182417166413431524191311640822-559907397-147323465-1863203508,13860,624,N/A
+
+20160616170441.198340+480,NT AUTHORITY\SYSTEM,D:\OTNM\md\bin\OtnmCfgServer.exe,D:\OTNM\md\bin\OtnmCfgServer.exe -debug --Ice.Config=D:\\OTNM\\md\\etc\\ice\\db\\node/servers/Server-CfgServer/config/config,14932,7648,N/A
+
+Time,User,Executable,CommandLine,PID,Parent PID,Privileges
+20160616191726.101768+480,NT AUTHORITY\SYSTEM,C:\Windows\system32\conhost.exe,\??\C:\Windows\system32\conhost.exe "842054492-1640972406-302130681-1179381355143048804220160710101176883804-1926060848,12812,624,SeLockMemoryPrivilege|SeTcbPrivilege|SeSystemProfilePrivilege|SeProfileSingleProcessPrivilege|SeIncreaseBasePriorityPrivilege|SeCreatePagefilePrivilege|SeCreatePermanentPrivilege|SeDebugPrivilege|SeAuditPrivilege|SeChangeNotifyPrivilege|SeImpersonatePrivilege|SeCreateGlobalPrivilege|SeIncreaseWorkingSetPrivilege|SeTimeZonePrivilege|SeCreateSymbolicLinkPrivilege|
+
+20160616191732.561138+480,NT AUTHORITY\SYSTEM,D:\OTNM\md\bin\OtnmCfgServer.exe,D:\OTNM\md\bin\OtnmCfgServer.exe -debug --Ice.Config=D:\\OTNM\\md\\etc\\ice\\db\\node/servers/Server-CfgServer/config/config,14264,7648,SeLockMemoryPrivilege|SeTcbPrivilege|SeSystemProfilePrivilege|SeProfileSingleProcessPrivilege|SeIncreaseBasePriorityPrivilege|SeCreatePagefilePrivilege|SeCreatePermanentPrivilege|SeDebugPrivilege|SeAuditPrivilege|SeChangeNotifyPrivilege|SeImpersonatePrivilege|SeCreateGlobalPrivilege|SeIncreaseWorkingSetPrivilege|SeTimeZonePrivilege|SeCreateSymbolicLinkPrivilege|
+
+20160616191732.585139+480,NT AUTHORITY\SYSTEM,C:\Windows\system32\conhost.exe,\??\C:\Windows\system32\conhost.exe "-1141835295-2067352276852586543122006386572522669-4432037391343241250941959023,14732,624,SeLockMemoryPrivilege|SeTcbPrivilege|SeSystemProfilePrivilege|SeProfileSingleProcessPrivilege|SeIncreaseBasePriorityPrivilege|SeCreatePagefilePrivilege|SeCreatePermanentPrivilege|SeDebugPrivilege|SeAuditPrivilege|SeChangeNotifyPrivilege|SeImpersonatePrivilege|SeCreateGlobalPrivilege|SeIncreaseWorkingSetPrivilege|SeTimeZonePrivilege|SeCreateSymbolicLinkPrivilege|
+
+20160616191733.924215+480,NT AUTHORITY\SYSTEM,C:\Windows\system32\conhost.exe,\??\C:\Windows\system32\conhost.exe "16911796191808957613157278316737917921617097246820947504959562117953331175,14200,624,SeLockMemoryPrivilege|SeTcbPrivilege|SeSystemProfilePrivilege|SeProfileSingleProcessPrivilege|SeIncreaseBasePriorityPrivilege|SeCreatePagefilePrivilege|SeCreatePermanentPrivilege|SeDebugPrivilege|SeAuditPrivilege|SeChangeNotifyPrivilege|SeImpersonatePrivilege|SeCreateGlobalPrivilege|SeIncreaseWorkingSetPrivilege|SeTimeZonePrivilege|SeCreateSymbolicLinkPrivilege|
+
