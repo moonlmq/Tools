@@ -88,3 +88,95 @@ def topMatches(prefs,person,n=5,similarity=sim_pearson):
 	score.sort()
 	score.reverse()
 	return score[0:]
+
+#利用所有他人评价值的加权平均，为某人提供建议
+def getRecommendations(prefs,person,similarity=sim_pearson):
+	totals={}
+	simSums={}
+	for other in prefs:
+		if other == person : continue
+		sim = similarity(prefs,person,other)
+
+
+
+		#忽略评价值为零或小于零的情况
+		if sim<=0: continue
+		for item in prefs[other]:
+
+			#只对还未曾看过的的影片进行评价
+			if item not in prefs[person] or prefs[person][item]==0:
+				#相似度*评价值
+				totals.setdefault(item,0)
+				totals[item]+=prefs[other][item]*sim
+				#相似度之和
+				simSums.setdefault(item,0)
+				simSums[item]+=sim
+
+	#建立一个归一化的列表
+	rankings = [(total/simSums[item],item) for item, total in totals.items()]
+
+	#返回经过排序的列表
+	rankings.sort()
+	rankings.reverse()
+	return rankings
+
+#将物品与人员对调
+def transformPrefs(prefs):
+	result={}
+	for person in prefs:
+		for item in prefs[person]:
+			result.setdefault(item,{})
+
+			result[item][person]=prefs[person][item]
+	return result
+
+
+##########################
+#基于物品的过滤
+##########################
+def calculateSimilarItems(prefs,n=10):
+	#建立字典，以给出与这些物品最为相近的所有其他物品
+	result={}
+
+	#以物品为中心对偏好矩阵实施倒置处理
+	itemPrefs=transformPrefs(prefs)
+	c=0
+	for item in itemPrefs:
+		#针对大数据集更新状态变量
+		c+=1
+		if c%100==0: print "%d / %d" % (c,len(itemPrefs))
+		#寻找最为相近的物品
+		scores= topMatches(itemPrefs,item,n=n,similarity=sim_distance)
+		result[item]=scores
+	return result
+
+
+def getRecommendedItems(prefs,itemMatch,user):
+	userRatings=prefs[user]
+	scores={}
+	totalSim={}
+
+	#循环遍历由当前用户评分的物品
+	for (item,rating) in userRatings.items():
+
+		#循环遍历与当前物品相近的物品
+		for (similarity,item2) in itemMatch[item]:
+
+			#如果该用户已经对当前物品做过评价，则将其忽略
+			if item2 in userRatings : continue
+
+			#评价值与相似度的加权之和
+			scores.setdefault(item2,0)
+			scores[item2]+=similarity*rating
+
+			#全部相似度之和
+			totalSim.setdefault(item2,0)
+			totalSim[item2]+=similarity
+
+		#将每个合计值除以加权和，求出平均值
+		rankings=[(score/totalSim[item],item) for item,score in scores.items()]
+
+		#按最高值到最低值的顺序，返回评分结果
+		rankings.sort()
+		rankings.reverse()
+		return rankings
