@@ -43,8 +43,10 @@ class debugger():
 			# Obtain a valid handle to the newly created process
 			# and store it for future acccess
 			self.h_process=self.open_process(process_information.dwProcessId)
+			return process_information.dwProcessId
 		else:
 			print "[*] Error: 0x%08x." % kernel32.GetLastError()
+			return 0
 
 
 	def open_process(self,pid):
@@ -96,6 +98,6 @@ class debugger():
 
 
 deb = debugger()
-pid = raw_input("Enter PID: ")
+pid = deb.load(b"C:\\WINDOWS\\system32\\calc.exe")
 deb.attach(pid)
 deb.detach()
