@@ -37,36 +37,39 @@ class debugger():
 			None,
 			byref(startupinfo),
 			byref(process_information)):
-			print "[*] The process have been successfully launched!"
-			print "[*] PID: %d" % process_information.dwProcessId
+			print ("[*] The process have been successfully launched!")
+			print ("[*] PID: %d" % process_information.dwProcessId)
 
 			# Obtain a valid handle to the newly created process
 			# and store it for future acccess
 			self.h_process=self.open_process(process_information.dwProcessId)
 			return process_information.dwProcessId
 		else:
-			print "[*] Error: 0x%08x." % kernel32.GetLastError()
+			print ("[*] Error: 0x%08x." % kernel32.GetLastError())
 			return 0
 
 
 	def open_process(self,pid):
-		print "into open process"
+		print ("into open process")
 		PROCESS_ALL_ACCESS =2035711
 		h_process=kernel32.OpenProcess(PROCESS_ALL_ACCESS,False,pid)
-		print "the h_process is "+ str(h_process)
+		print ("the h_process is "+ str(h_process))
 		return h_process
 
 	def attach(self,pid):
 		self.h_process = self.open_process(pid)
-		print "attach h_process is "+ str(self.h_process)
+		print ("attach h_process is "+ str(self.h_process))
 		# Attempt to attach to the process
 		#if this fails  exit the call
-		if kernel32.DebugActiveProcess(pid):
+		print (kernel32.DebugActiveProcess(pid))
+		if (kernel32.DebugActiveProcess(pid)):
 			self.debugger_active = True
 			self.pid = int(pid)
+			print ("ok")
 			self.run()
 		else:
-			print "[*] Unable to attach to the process"
+			print ("[*] Unable to attach to the process")
+			print("[*] Errorcode:0x%08x." % kernel32.GetLastError())  
 
 	def run(self):
 		#poll the debuggee for debugging events
@@ -86,18 +89,50 @@ class debugger():
 
 	def detach(self):
 		if kernel32.DebugActiveProcess(self.pid):
-			print "[*] Finished debugging. Exiting..."
+			print ("[*] Finished debugging. Exiting...")
 			return True
 		else:
-			print "There was an error"
+			print ("There was an error")
+			return False
+
+
+	def open_thread(self,thread_id):
+		h_thread=kernel32.OpenThread(THREAD_ALL_ACCESS,None,thread_id)
+		if h_thread is not None:
+			return h_thread
+		else:
+			print "[*] Could not obtain a valid thread handle."
+			return False
+
+	def enumerate_threads(self):
+
+		thread_entry = THREADENTRY32()
+		thread_list = []
+		snapshot = kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPTH READ,self.pid)
+
+		if snapshot is not None:
+			thread_entry.dwSize = sizeof(thread_entry)
+			success = kernel32.Thread32First(snapshot,byref(thread_entry))
+
+			while success:
+				if thread_entry.th32OwnerProcessID == self.pid:
+					thread_list.append(thread_entry.th32ThreadID)
+					success = kernel32.Thread32Next(snapshot,byref(thread_entry))
+					kernel32.CloseHandle(snapshot)
+					return thread_list
+				else:
+					return False
+
+	def get_thread_context(self,thread_id=None,h_thread=None):
+		context =CONTEXT()
+		context.ContextFlags = CONTEXT_FULL | CONTEXT_DEBUG_REGISTERS
+
+		h_thread = self.open_thread(thread_id)
+		if kernel32.GetThreadContext(h_thread,byref(context)):
+			kernel32.CloseHandle(h_thread)
+			return context
+		else:
 			return False
 
 
 
-
-
-
-deb = debugger()
-pid = deb.load(b"C:\\WINDOWS\\system32\\calc.exe")
-deb.attach(pid)
-deb.detach()
