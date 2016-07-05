@@ -4,7 +4,7 @@ import time
 '''''Telnet远程登录：Windows客户端连接Linux服务器'''  
 # 配置选项  
 Host = '10.26.0.17' # Telnet服务器IP  
-username = 'bmu852'   # 登录用户名  
+username = ''   # 登录用户名  
 password = 'aaaabbbb'  # 登录密码  
 finish = '->'      # 命令提示符（标识着上一条命令已执行完毕）  
 
