@@ -129,4 +129,75 @@ plt.legend(prop={'size':'x-large'})
 
 ax2 = fig.add_subplot(212)
 plt.plot(f,amps,label="transformed")
+# plt.show()
+
+print u"数值积分"
+#scipy.integrate为数值积分的包，quad函数可以求单变量函数在两点之间的积分，点
+#之间的距离可以是无穷大或无穷小。该函数使用最简单的数值积分方法即梯形法则
+from scipy import integrate
+print "Gaussian integral",np.sqrt(np.pi)
+integrate.quad(lambda x: np.exp(-x**2),-np.inf,np.inf)
+
+print u"插值"
+# 插值（interpolation）即在数据集已知数据点之间“填补空白”。scipy.interpolate函数
+# 可以根据实验数据进行插值。interp1d类可以创建线性插值（linear interpolation）或三次插值
+# （cubic interpolation）的函数。默认将创建线性插值函数，三次插值函数可以通过设置kind参数
+# 来创建。interp2d类的工作方式相同，只不过用于二维插值。
+#创建数据点并添加噪音
+from scipy import interpolate
+x= np.linspace(-18,18,36)
+noise = 0.1*np.random.random(len(x))
+signal = np.sinc(x) + noise
+#创建一个线性插值函数，并应用于有5倍数据点个数的输入数组
+interpreted = interpolate.interp1d(x,signal)
+x2 = np.linspace(-18,18,180)
+y = interpreted(x2)
+cubic = interpolate.interp1d(x,signal,kind="cubic")
+y2=cubic(x2)
+#三次插值
+cubic = interpolate.interp1d(x,signal,kind="cubic")
+plt.plot(x,signal,'o',label="data")
+plt.plot(x2,y,'-',label="linear")
+plt.plot(x2,y2,'-',lw=2,label="cubic")
+plt.legend()
+# plt.show()
+
+print u"图像处理"
+#载入图像
+from scipy import misc
+from scipy import ndimage
+
+image = misc.lena().astype(np.float32)
+plt.subplot(221)
+plt.title("Original Inage")
+img = plt.imshow(image,cmap=plt.cm.gray)
+#中值滤波器扫描信息的每一个数据点，并替换为相邻数据点的中值。对
+#图像应用中值滤波器并显示在第二个子图中
+plt.subplot(222)
+plt.title("Median Filter")
+filtered = ndimage.median_filter(image,size=(42,42))
+plt.imshow(filtered,cmap=plt.cm.gray)
+#旋转图像并显示在第三个子图中
+plt.subplot(223)
+plt.title("Rotated")
+rotated = ndimage.rotate(image,90)
+plt.imshow(rotated,cmap=plt.cm.gray)
+#Prewitt滤波器是基于图像强度的梯度计算
+plt.subplot(224)
+plt.title("Prewitt Filter")
+filtered=ndimage.prewitt(image)
+plt.imshow(filtered,cmap=plt.cm.gray)
 plt.show()
+
+print u"音频处理"
+#使用scipy.io.wavfile模块中的read函数可以将该文件转换为一个NumPy
+#数组
+#使用read函数读入文件,返回采样率和音频数据
+from scipy.io import wavfile
+import urllib2
+import sys
+sample_rate,data = wavfile.read(WAV_FILE)
+#应用tile函数
+repeated = np.tile(data,4)
+#使用write函数写入一个新文件
+wavfile.write("repeated_yababy.wav",sample_rate,repeated)
