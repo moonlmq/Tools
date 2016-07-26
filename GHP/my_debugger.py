@@ -11,6 +11,8 @@ class debugger():
 		self.debugger_active = False
 		self.h_thread        =     None
 		self.context         =     None
+		self.exception =None
+		self.exception_address = None
 
 	def load(self,path_to_exe):
 		# dwCreation flag 标志位控制进程的创建方式，若希望新创建的进程独占一个新的
@@ -90,13 +92,24 @@ class debugger():
 			self.debug_event       = debug_event
 			print "Event Code: %d Thread ID: %d" %\
 			(debug_event.dwDebugEventCode,debug_event.dwThreadId)
+			#若事件码显示这是一个异常事件，则进一步检测其确切类型
+			if debug_event.dwDebugEventCode == EXCEPTION_DEBUG_EVENT:
+				#获取异常代码
+				self.exception = debug_event.u.Exception.ExceptionRecord.ExceptionCode
+				self.exception_address = debug_event.u.Exception.ExceptionRecord.ExceptionAddress
+				if exception == EXCEPTION_ACCESS_VIOLATION:
+				print "Access Voilation Detected."
+			elif self.exception == EXCEPTION_BREAKPOINT:
+				continue_status = self.exception_handler_breakpoint()
+			elif self.exception == EXCEPTION_GUARD_PAGE:
+				print "Guard Page Access Dectected"
+			elif self.exception == EXCEPTION_SINGLE_STEP:
+				self.exception_handler_single_step()
 			#将目标进程恢复至原来的执行状态
 			#第一二个参数来源于DEBUG_EVENT的同名成员变量
 			#第三个参数决定目标进程是继续执行（DBG_CONTINUE)还是继续处理
 			#所捕获的异常事件（DBG_EXECPTION_NOT_HANDLED
-
-			
-			kernel32.ContinueDebugEvent(debug_event.dwProcessId,
+		kernel32.ContinueDebugEvent(debug_event.dwProcessId,
 				debug_event.dwThreadId,continue_status)
 
 	#DebugActiveProcessStop可以使调试器与被调试进程分离
