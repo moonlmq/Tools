@@ -13,6 +13,7 @@ class debugger():
 		self.context         =     None
 		self.exception =None
 		self.exception_address = None
+		self.breakpoints = {}
 
 	def load(self,path_to_exe):
 		# dwCreation flag 标志位控制进程的创建方式，若希望新创建的进程独占一个新的
@@ -97,14 +98,14 @@ class debugger():
 				#获取异常代码
 				self.exception = debug_event.u.Exception.ExceptionRecord.ExceptionCode
 				self.exception_address = debug_event.u.Exception.ExceptionRecord.ExceptionAddress
-				if exception == EXCEPTION_ACCESS_VIOLATION:
-				print "Access Voilation Detected."
-			elif self.exception == EXCEPTION_BREAKPOINT:
-				continue_status = self.exception_handler_breakpoint()
-			elif self.exception == EXCEPTION_GUARD_PAGE:
-				print "Guard Page Access Dectected"
-			elif self.exception == EXCEPTION_SINGLE_STEP:
-				self.exception_handler_single_step()
+				if self.exception == EXCEPTION_ACCESS_VIOLATION:
+					print "Access Voilation Detected."
+				elif self.exception == EXCEPTION_BREAKPOINT:
+					continue_status = self.exception_handler_breakpoint()
+				elif self.exception == EXCEPTION_GUARD_PAGE:
+					print "Guard Page Access Dectected"
+				elif self.exception == EXCEPTION_SINGLE_STEP:
+					self.exception_handler_single_step()
 			#将目标进程恢复至原来的执行状态
 			#第一二个参数来源于DEBUG_EVENT的同名成员变量
 			#第三个参数决定目标进程是继续执行（DBG_CONTINUE)还是继续处理
@@ -171,3 +172,54 @@ class debugger():
 			return False
 
 
+	def exception_handler_breakpoint(self):
+		print "[*] Inside the breakpoint handler."
+		print "Exception address: 0x%08x" % self.exception_address
+
+		return DBG_CONTINUE
+		#读取写入内存ReadProcessMemory和WriteProcessMemory
+		#第一个参数为进程句柄，第二个参数为希望读取或写入数据所在的起始内存地址
+		#第三个参数作为一个数据指针正指向着希望读取或写入的数据
+		#第四个参数指明了所要读取或写入数据的大小
+	def read_process_memory(self,address,length):
+		data = ""
+		read_buf = create_string_buffer(length)
+		count = c_ulong(0)
+
+		if not kernel32.ReadProcessMemory(self.h_process,address,read_buf,length,byref(count)):
+			return False
+		else:
+			data += read_buf.raw
+			return data
+	def write_process_memory(self,address,data):
+		count = c_ulong(0)
+		length = len(data)
+
+		c_data = c_char_p(data[count.value:])
+
+		if not kernel32.WriteProcessMemory(self.h_process,address,c_data,length,byref(count)):
+			return False
+		else:
+			return True
+
+	def bp_set(self,address):
+
+		if not self.breakpoints.has_key(address):
+			try:
+				#备份这个内存地址上原有的字节值
+				original_byte = self.read_process_memory(address,1)
+				#写入一个INT3中断指令，其操作码为0xCC
+				self.write_process_memory(address,"\xCC")
+
+				#将设下的断点记录在一个内部的断点列表中
+				self.breakpoints[address] = (address,original_byte)
+			except:
+				return False
+		return True
+
+	def func_resolve(self,dll,function):
+
+		handle = kernel32.GetModuleHandleA(dll)
+		address = kernel32.GetProcAddress(handle,function)
+
+		kernel32.CloseHandle(handle)
