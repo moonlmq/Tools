@@ -14,6 +14,8 @@ class debugger():
 		self.exception =None
 		self.exception_address = None
 		self.breakpoints = {}
+		self.first_breakpoint = True
+		self.hardware_breakpoints = {}
 
 	def load(self,path_to_exe):
 		# dwCreation flag 标志位控制进程的创建方式，若希望新创建的进程独占一个新的
@@ -203,7 +205,7 @@ class debugger():
 			return True
 
 	def bp_set(self,address):
-
+		print "[*] Setting breakpoint at: 0x%08x" % address
 		if not self.breakpoints.has_key(address):
 			try:
 				#备份这个内存地址上原有的字节值
@@ -218,8 +220,65 @@ class debugger():
 		return True
 
 	def func_resolve(self,dll,function):
-
+		#获得目标函数所在模块（可以是.dll或.exe文件）
+		#取的相关模块句柄
 		handle = kernel32.GetModuleHandleA(dll)
+		#GetProcAddress帮助获取某一函数的虚拟内存地址
 		address = kernel32.GetProcAddress(handle,function)
 
 		kernel32.CloseHandle(handle)
+		return address
+
+	def bp_set_hw(self,address, length,condition):
+		#检测硬件断点的长度是否有效
+		if length not in (1,2,4):
+			return False
+		else:
+			length -=1
+		#检测硬件断点的触发条件是否有效
+		if condition not in (HW_ACCESS,HW_EXECUTE,HW_WRITE):
+			return False
+		#检测是否存在空置的调试寄存器槽
+		if not self.hardware_breakpoints.has_key(0):
+			available = 0
+		elif not self.hardware_breakpoints.has_key(1):
+			available = 1
+		elif not self.hardware_breakpoints.has_key(2):
+			available = 2
+		elif not self.hardware_breakpoints.has_key(3):
+			available = 3
+		else:
+			return False
+
+		#在每一个线程环境下设置调试寄存器
+		for thread_id in self.enumerate_threads():
+			context = self.get_thread_context(thread_id=thread_id)
+			#通过DR7中相应的标志位来激活断点
+			context.Dr7 |= 1 <<(available*2)
+			#在空置的寄存器中写入断点地址
+			if available == 0:
+				context.Dr0 = address
+			elif available == 1:
+				context.Dr1 == address
+			elif available == 2:
+				context.Dr1 == address
+			elif available == 3:
+				context.Dr1 == address
+			#设置硬件断点的触发条件
+			context.Dr7 |= condition <<((available*4)+16)
+			#设置硬件断点的长度
+			context.Dr7 |= length <<((available*4)+18)
+			#提交经改动后的线程上下文环境信息
+			h_thread = self.open_thread(thread_id)
+			kernel32.SetThreadContext(h_thread,byref(context))
+
+		#更新内部的硬件断点列表
+		self.hardware_breakpoints[available] = (address,length,condition)
+		return True
+
+	def exception_handler_single_step(self):
+		#判断这个但不事件是否由一个硬件断点所触发，若是则捕获这个断点
+		#事件，根据Intel给出的文档，通过检测Dr6寄存器上的BS标志位来判
+		#断出这个单步事件的触发原因，然而windows系统似乎并没有正确地将
+		#这个标志位传递
+		
