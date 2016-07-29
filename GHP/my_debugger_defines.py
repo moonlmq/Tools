@@ -1,3 +1,4 @@
+#-*-coding:utf-8-*-
 from ctypes import *
 
 # ctype变量创建匈牙利命名风格
