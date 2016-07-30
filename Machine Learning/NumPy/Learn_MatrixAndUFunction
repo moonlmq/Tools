@@ -1,0 +1,144 @@
+#-*- coding:utf-8 -*-
+import numpy as np
+from matplotlib.pyplot import plot
+from matplotlib.pyplot import show
+###############
+#矩阵和通用函数
+###############
+
+#矩阵
+print u"创建矩阵"
+#mat,matrix和bmat函数可以创建矩阵
+A = np.mat('1 2 3; 4 5 6; 7 8 9')
+print "Creation from string with mat", A
+#T获取转置矩阵
+print "transpose A ",A.T
+#I获取逆矩阵
+print "Inverse A", A.I
+
+print "Creation from array",np.mat(np.arange(9).reshape(3,3))
+
+print u"从已有矩阵创建新矩阵"
+#bmat函数可以利用较小的矩阵创建一个新的大矩阵
+A =np.eye(2)
+print "A", A
+B = 2 *A
+print "B",B
+#使用字符串创建复合矩阵，可以用矩阵变量名代替数字
+print "Compound matrix\n", np.bmat("A B; A B")
+
+#通用函数
+print u"创建通用函数"
+#通用函数的输入是一组标量，输出也是一组标量，他们通常可以对应于
+#基本数学运算，如加减乘除等
+def ultimate_answer(a):
+	result = np.zeros_like(a)
+	result.flat = 42
+	return result
+#使用frompyfunc创建通用函数。指定输入参数个数为1，输出参数个数为1
+ufunc = np.frompyfunc(ultimate_answer,1,1)
+print "The answer",ufunc(np.arange(4))
+
+print u"通用函数的方法"
+#在add上调用通用函数的方法
+#沿着指定的轴，在连续的数组元素之间递归调用通用函数，即可得到输入
+#数组的规约（reduce）计算结果
+a = np.arange(9)
+print "Reducce",np.add.reduce(a)
+#accumulate方法同样可以递归作用于输入数组，它将存储运算的中间结果
+print "Accumulate",np.add.accumulate(a)
+#reduceat方法需要输入一个数组以及一个索引值列表作为参数
+print "Reduceat",np.add.reduceat(a,[0,5,2,7])
+#第一步为对0和5之间元素进行reduce
+print "Reduceat step I",np.add.reduce(a[0:5])
+#第二步用到索引值5和2，由于2小于5，返回索引值5的元素
+print "Reduceat step II", a[5]
+#第三步用到索引值2和7，对索引值2到7之间元素进行reduce操作
+print "Reduceat step III", np.add.reduce(a[2:7])
+#第四步用到索引值7，对7到末端元素进行reduce操作
+print "Reduceat step IV", np.add.reduce(a[7:])
+
+#outer方法返回一个数组，他的秩等于两个输入数组的秩的和。
+print "Outer",np.add.outer(np.arange(2),a)
+
+print u"数组的除法运算"
+#divide函数在整数和浮点数除法中只保留整数部分
+a = np.array([2,6,5])
+b = np.array([1,2,3])
+print "Divide",np.divide(a,b), np.divide(b,a)
+
+#true_divide函数返回除法的浮点数结果而不作截断
+print "True Divide",np.true_divide(a,b),np.true_divide(b,a)
+
+#floor_divide 总是返回整数结果，向下取整。
+print "Floor Divide",np.floor_divide(a,b),np.floor_divide(b,a)
+
+#默认情况下，使用/运算符相当于divide。
+#如果 from __future__ import division调用true_divide
+print "/ operator", a/b, b/a
+
+#运算符//对应于floor_divide
+print "// operator", a//b,b//a
+
+print u"模运算"
+#remainder函数逐个返回两个数组中元素相除后的余数，如果第二个数字为0
+#则直接返回0
+a = np.arange(-4,4)
+print "a",a
+print "Remainder",np.remainder(a,2)
+#mod函数与remainder函数功能一样
+print "Mod", np.mod(a,2)
+#%操作符为remainder函数的简写
+print "% operator", a%2
+
+#fmod函数处理负数的方式与remainder不同。所得余数的正负由被除数决定，
+#与除数的正负无关
+print "Fmod",np.fmod(a,2)
+
+#sin,cos,tan均有对应通用函数
+a = 2.2
+b= 3.3
+t =np.linspace(-np.pi,np.pi,201)
+x = np.sin(a*t+np.pi/2)
+y = np.cos(b*t)
+print "sin",x
+print "cos",y
+
+print u"方波"
+t= np.linspace(-np.pi,np.pi,201)
+k = np.arange(1,float(99))
+k = 2*k-1
+f = np.zeros_like(t)
+for i in range(len(t)):
+	f[i]=np.sum(np.sin(k*t[i])/k)
+f=(4/np.pi)*f
+# plot(t,f)
+# show()
+
+print u"绘制锯齿波和三角波"
+t= np.linspace(-np.pi,np.pi,201)
+k = np.arange(1,float(99))
+f = np.zeros_like(t)
+for i in range(len(t)):
+	f[i]=np.sum(np.sin(2*np.pi*k*t[i])/k)
+f=(-2/np.pi)*f
+plot(t,f,lw=1.0)
+plot(t,np.abs(f),lw=2.0)
+show()
+
+print u"位操作和比较函数"
+#XOR操作符被称为不等运算符，当两个操作数符号不一致时
+#XOR操作的结果为负数
+#^操作符对应于bitwise_xor函数异或，<对应于less函数
+x = np.arange(-9,9)
+y=-x
+print "Sign different?",(x^y)<0
+print "Sign different?",np.less(np.bitwise_xor(x,y),0)
+
+# &操作符对应于bitwise_and,==对应于equal函数
+print "Power of 2?\n",x,"\n",(x & (x-1)) ==0
+print "Power if 2?\n",x,"\n",np.equal(np.bitwise_and(x,(x-1)),0)
+
+# <<操作符对应于left_shift函数
+print "Modulus 4\n",x, "\n",x &((1<<2)-1)
+print "Modulus 4\n",x, "\n",np.bitwise_and(x,np.left_shift(1,2)-1)
