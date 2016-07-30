@@ -15,8 +15,8 @@ class IP(Structure):
 	("ttl",			c_ubyte),
 	("protocal_num",c_ubyte),
 	("sum",			c_ushort),
-	("src",			c_ulong),
-	("dst",			c_ulong)]
+	("src",			c_uint32),
+	("dst",			c_uint32)]
 
 	def __new__(self, socket_buffer=None):
 		return self.from_buffer_copy(socket_buffer)

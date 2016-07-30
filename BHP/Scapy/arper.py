@@ -7,7 +7,7 @@ import threading
 import signal
 
 interface = "eth0"
-target_ip = "192.168.253.3"
+target_ip = "192.168.253.4"
 gateway_ip = "192.168.253.1"
 packet_count = 1000
 
