@@ -53,7 +53,7 @@ def main():
 		while True:
 			# read in packet
 			raw_buffer = sniffer.recvfrom(65565)[0]
-			ip_content =raw_buffer[0:20]
+			ip_content =raw_buffer[:20]
 
 			# create an IP header from the first 20 bytes of the buffer
 			ip_header = IP(ip_content)
@@ -79,6 +79,7 @@ def main():
 
 					#make sure host is in target subnet
 					if IPAddress(ip_header.src_address) in IPNetwork(subnet):
+						print  "Get response from ",ip_header.src_address
 						#make sure it has magic message
 						print "get the response from",ip_header.src_address
 						if raw_buffer[len(raw_buffer) - len(magic_message):] ==\
