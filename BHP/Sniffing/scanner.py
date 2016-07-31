@@ -8,13 +8,13 @@ import socket
 from ctypes import *
 
 #host to listen on
-host = "192.168.253.9"
+host = "192.168.253.4"
 
 # subnet to target
 subnet = "192.168.253.0/24"
 
 #magic string to check ICMP responses 
-magic_message = 'PYTHON'
+magic_message = 'abcdefghigklmnopq'
 
 #this sprays out the UDP datagrams
 def udp_sender(subnet, magic_message):
@@ -49,7 +49,6 @@ def main():
 	t = threading.Thread(target = udp_sender, args = (subnet, magic_message))
 	t.start()
 
-
 	try:
 		while True:
 			# read in packet
@@ -73,7 +72,7 @@ def main():
 				# create ICMP structure
 				icmp_header = ICMP(buf)
 
-				print "ICMP -> Type: %d Code: %d" % (icmp_header.type, icmp_header.code)
+				# print "ICMP -> Type: %d Code: %d" % (icmp_header.type, icmp_header.code)
 
 				#check for the TYPE 3 and CODE
 				if icmp_header.code == 3 and icmp_header.type == 3:
@@ -81,6 +80,7 @@ def main():
 					#make sure host is in target subnet
 					if IPAddress(ip_header.src_address) in IPNetwork(subnet):
 						#make sure it has magic message
+						print "get the response from",ip_header.src_address
 						if raw_buffer[len(raw_buffer) - len(magic_message):] ==\
 						magic_message:
 							print "Host Up: %s" % ip_header.src_address
