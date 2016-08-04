@@ -281,4 +281,53 @@ class debugger():
 		#事件，根据Intel给出的文档，通过检测Dr6寄存器上的BS标志位来判
 		#断出这个单步事件的触发原因，然而windows系统似乎并没有正确地将
 		#这个标志位传递
-		
+		if self.context.Dr6 & 0x1 and self.hardware_breakpoints.has_key(0):
+			slot = 0
+		elif self.context.Dr6 & 0x2 and self.hardware_breakpoints.has_key(1):
+			slot = 1
+		elif self.context.Dr6 & 0x4 and self.hardware_breakpoints.has_key(2):
+			slot = 2
+		elif self.context.Dr6 & 0x8 and self.hardware_breakpoints.has_key(3):
+			slot = 3
+		else:
+			#这个INT1中断并非由一个硬件断点引发
+			continue_status = DBG_EXCEPTION_NOT_HANDLED
+
+		#从断点列表中移除这个断点
+		if self.bp_del_hw(slot):
+			continue_status = DBG_CONTINUE
+
+		print "[*] Hardware breakpoint removed"
+		return continue_status
+
+	def bp_del_hw(self,slot):
+		#为所有的执行线程移除断点
+		for thread_id in self.enumerate_threads():
+			context = self.get_thread_context(thread_id=thread_id)
+
+			#通过重设标志位来移除这个硬件断点
+			context.Dr7 &= ~(1<<(slot*2))
+
+			#将断点地址清零
+			if slot == 0:
+				context.Dr0 = 0x00000000
+			elif slot == 1:
+				context.Dr1 = 0x00000000
+			elif slot == 2:
+				context.Dr2 = 0x00000000
+			elif slot ==3:
+				context.Dr2 = 0x00000000
+
+			#清空断点触发条件标志位
+			context.Dr7 &= ~(3 << ((slot * 4) + 16))
+
+			#清空断点长度标志位
+			context.Dr7 &= ~(3 << ((slot *4)+18))
+
+			#提交移除断点后的线程上下文环境信息
+			h_thread = self.open_thread(thread_id)
+			kernel32.SetThreadContext(h_thread,byref(context))
+
+		#将这个断点从内部的断点列表移除
+		del self.hardware_breakpoints[slot]
+		return True
