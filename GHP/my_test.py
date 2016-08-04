@@ -8,7 +8,8 @@ pid = raw_input("PID:")
 debugger.attach(int(pid))
 printf_address = debugger.func_resolve("msvcrt.dll","printf")
 print "[*] Address of printf: 0x%08x" % printf_address
-debugger.bp_set(printf_address)
+# debugger.bp_set(printf_address)
+debugger.bp_set_hw(printf,1,HW_EXECUTE)
 debugger.run()
 
 # print "go list"
