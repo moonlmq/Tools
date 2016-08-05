@@ -29,4 +29,4 @@ debugger.run()
 # 	print "[**] EDX: 0x%08x" % thread_context.Edx
 # 	print "[*] END DUNP"
 
-debugger.detach()
+# debugger.detach()
