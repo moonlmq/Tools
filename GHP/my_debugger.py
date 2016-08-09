@@ -16,6 +16,13 @@ class debugger():
 		self.breakpoints = {}
 		self.first_breakpoint = True
 		self.hardware_breakpoints = {}
+		self.guarded_pages = []
+		self.memory_breakpoints = {}
+
+		#确定当前系统中的默认内存页的大小设定
+		system_info = SYSTEM_INFO()
+		kernel32.GetSystemInfo(byref(system_info))
+		self.page_size = system_info.dwPageSize
 
 	def load(self,path_to_exe):
 		# dwCreation flag 标志位控制进程的创建方式，若希望新创建的进程独占一个新的
@@ -330,4 +337,31 @@ class debugger():
 
 		#将这个断点从内部的断点列表移除
 		del self.hardware_breakpoints[slot]
+		return True
+
+
+	def bp_set_mem(self,address,size):
+		mbi = MEMORY_BASIC_INFORMATION()
+		#若函数调用未返回一个完整的MEMORY_BASIC_INFORMATION
+		#结构体，则返回False
+		if kernel32.VirtualQueryEx(self.h_process,address,	byref(mbi),sizeof(mbi))< sizeof(mbi):
+			return False
+
+		current_page = mbi.BaseAddress
+		#对整个内存断点区域所覆盖到的所有内存页设置权限
+		while current_page <= address+size:
+			#将这个内存页记录在列表中，以便于将这些保护
+			#页与由操作系统或debugee进程自设的保护页区别开来
+			self.guarded_pages.append(current_page)
+			old_protection = c_ulong(0)
+			if not kernel32.VirtualProtectEx(self.h_process,current_page,\
+				size,mbi.Protect | PAGE_GUARD,byref(old_protection)):
+				return False
+
+			#以系统所设的内存页尺寸作为步长单位，
+			#递增内存断点区域
+			current_page +=self.page_size
+		#将这个内存断点记录在全局性的列表中
+		self.memory_breakpoints[address] = (address,size,mbi)
+
 		return True
