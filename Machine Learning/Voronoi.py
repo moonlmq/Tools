@@ -12,7 +12,7 @@ voronoi_plot_2d(vor)
 #         polygon = [vor.vertices[i] for i in region]
 #         plt.fill(*zip(*polygon))
 
-plt.show()
+
 print "vertives is: "+str(vor.vertices)
 print 
 
@@ -28,3 +28,4 @@ print "redge_vertices is:" + str(vor.ridge_vertices)
 # input points:
 
 print "ridge_points is: " + str(vor.ridge_points)
+plt.show()
