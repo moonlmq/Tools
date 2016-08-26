@@ -100,7 +100,7 @@ class CaptureManager(object):
 		"""Write the next exited frame to an image file"""
 		self._imageFilename = filename
 
-	def startWritingVideo(self,filename,encoding = cv2.cv.CV_FOURCC('I','4','2','0')):
+	def startWritingVideo(self,filename,encoding = cv2.VideoWriter_fourcc(*'XVID')):
 		"""Start writing exiteed frames to a video file"""
 		self._videoFilename = filename
 		self._videoEncoding = encoding
@@ -116,7 +116,7 @@ class CaptureManager(object):
 			return
 
 		if self._videoWriter is None:
-			fps = self._capture.get(cv2.cv.CV_CAP_PROP_FPS)
+			fps = self._capture.get(cv2.CAP_PROP_FPS)
 			if fps == 0.0:
 				# the capture's FPS is unknown so use an estimate
 				if self._framesElapsed <20:
@@ -125,8 +125,8 @@ class CaptureManager(object):
 					return
 				else:
 					fps = self._fpsEstimate
-			size = (int(self._capture.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)),\
-				int(self._capture.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)))
+			size = (int(self._capture.get(cv2.CAP_PROP_FRAME_WIDTH)),\
+				int(self._capture.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 			self._videoWriter = cv2.VideoWriter(self._videoFilename,self._videoEncoding,\
 				fps,size)
 			self._videoWriter.Write(self._frame)
