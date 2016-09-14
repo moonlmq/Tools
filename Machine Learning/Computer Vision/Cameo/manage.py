@@ -1,3 +1,9 @@
+#-*-coding:utf-8-*-
+"""
+CaptureManager
+读取新数据帧并将数据帧分发到不同的输出，如静态图片、
+视频文件、窗口。
+"""
 import cv2
 import numpy
 import time
