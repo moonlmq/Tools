@@ -42,7 +42,7 @@ class CaptureManager(object):
 	@property
 	def frame(self):
 		if self._enteredFrame and self._frame is None:
-			self._frame = self._capture.retrieve(channel = self.channel)
+			_,self._frame = self._capture.retrieve(self.channel)
 		return self._frame
 
 	@property
@@ -135,7 +135,7 @@ class CaptureManager(object):
 				int(self._capture.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 			self._videoWriter = cv2.VideoWriter(self._videoFilename,self._videoEncoding,\
 				fps,size)
-			self._videoWriter.Write(self._frame)
+			self._videoWriter.write(self._frame)
 """
 WindowManager 
 使应用可以操作窗口和相关事件
@@ -162,7 +162,7 @@ class WindowManager(object):
 		cv2.destroyWindow(self._windowName)
 		self._isWindowCreated = False
 
-	def processEvent(self):
+	def processEvents(self):
 		keycode = cv2.waitKey(1)
 		if self.keypressCallback is not None and keycode != -1:
 			#Discard any no ASCII info encoded by GTK
