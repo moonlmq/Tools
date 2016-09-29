@@ -136,8 +136,10 @@ class CaptureManager(object):
 			self._videoWriter = cv2.VideoWriter(self._videoFilename,self._videoEncoding,\
 				fps,size)
 			self._videoWriter.Write(self._frame)
-
-
+"""
+WindowManager 
+使应用可以操作窗口和相关事件
+"""
 class WindowManager(object):
 	def __init__(self, windowName,keypressCallback = None):
 		self.keypressCallback = keypressCallback
