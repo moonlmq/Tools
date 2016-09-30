@@ -142,12 +142,12 @@ def strokeEdges(src,dst,blurKsize=7,edgeKsize=5):
 		graySrc = cv2.cvtColor(blurredSrc,cv2.COLOR_BGR2GRAY)
 	else:
 		graySrc = cv2.cvtColor(src,cv2.COLOR_BGR2GRAY)
-	CV2.Laplacian(graySrc,cv2.cv.CV_8U,graySrc,ksize=edgeKsize)
+	cv2.Laplacian(graySrc,cv2.CV_8U,graySrc,ksize=edgeKsize)
 	nomalizedInverseAlpha = (1.0/255)*(255-graySrc)
 	channels = cv2.split(src)
 	for channel in channels:
 		channel[:] = channel *nomalizedInverseAlpha
-	cv2.merge(channels.dst)
+	cv2.merge(channels,dst)
 
 class VConvolutionFilter(object):
 	"""A filter that applies a convolution to V (or all of BGR)"""
