@@ -26,6 +26,7 @@ def swapRects(src,dst,rects,interpolation = cv2.INTER_LINEAR):
 	if numRects <2:
 		return
 	#Copy the contents of the last rectangle into temporary storage.
+	x, y, w, h = rects[numRects - 1]
 	temp = src[y:y+h,x:x+w].copy()
 	#Copy the contents of each rectangle into the next.
 	i = numRects - 2

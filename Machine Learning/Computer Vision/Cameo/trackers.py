@@ -15,7 +15,7 @@ class Face(object):
 class FaceTracker(object):
 	"""A tracker for facial features:face,eyes,nose,mouth."""
 	def __init__(self,scaleFactor = 1.2,minNeighbors=2,\
-		flags = cv2.CV_HAAR_SCALE_IMAGE):
+		flags = cv2.CASCADE_SCALE_IMAGE):
 		self.scaleFactor = scaleFactor
 		self.minNeighbors = minNeighbors
 		self.flags = flags
@@ -42,7 +42,7 @@ class FaceTracker(object):
 		if utils.isGray(image):
 			image = cv2.equalizeHist(image)
 		else:
-			image = cv2.cvtColor(image,cv2.BGR2GRAY)
+			image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 			cv2.equalizeHist(image,image)
 		minSize = utils.widthHeightDivideBy(image,8)
 		faceRects = self._faceClassifier.detectMultiScale(
@@ -55,19 +55,19 @@ class FaceTracker(object):
 				x,y,w,h = faceRect
 
 				# Seek an eye in the upper-left part of the face
-				searchRect = (x+w/7,y,w*2/7.h/2)
+				searchRect = (x+w/7,y,w*2/7,h/2)
 				face.leftEyeRect = self._detectOneObject(
 					self._eyeClassifier,image,searchRect,64)
 				# Seek an eye in the upper-right part of the face
-				searchRect = (x+w*4/7,y,w*2/7.h/2)
+				searchRect = (x+w*4/7,y,w*2/7,h/2)
 				face.rightEyeRect = self._detectOneObject(
 					self._eyeClassifier,image,searchRect,64)
 				# Seek a nose in the middle part of the face
-				searchRect = (x+w/4,y+h/4,w*2.h/2)
+				searchRect = (x+w/4,y+h/4,w*2,h/2)
 				face.noseRect = self._detectOneObject(
 					self._noseClassifier,image,searchRect,32)
 				# Seek a mouth in the lower-middle part of the face
-				searchRect = (x+w/6,y+h*2/3,w*2/3.h/3)
+				searchRect = (x+w/6,y+h*2/3,w*2/3,h/3)
 				face.mouthRect = self._detectOneObject(
 					self._mouthClassifier,image,searchRect,16)
 
@@ -88,7 +88,7 @@ class FaceTracker(object):
 		return (x+subX,y+subY,subW,subH)
 
 	def drawDebugRects(self,image):
-	"""Draw rectangles around the tracked facial features."""
+		"""Draw rectangles around the tracked facial features."""
 		if utils.isGray(image):
 			faceColor =255
 			leftEyeColor = 255
@@ -102,9 +102,9 @@ class FaceTracker(object):
 			noseColor = (0,255,0)#green
 			mouthColor = (255,0,0)#blue
 
-		for face in self,faces:
+		for face in self.faces:
 			rects.outlineRect(image,face.faceRect,faceColor)
 			rects.outlineRect(image,face.leftEyeRect,leftEyeColor)
-			rects.outlineRect(image,fac.rightEyeRect,rightEyeColor)
+			rects.outlineRect(image,face.rightEyeRect,rightEyeColor)
 			rects.outlineRect(image,face.noseRect,noseColor)
 			rects.outlineRect(image,face.mouthRect,mouthColor)

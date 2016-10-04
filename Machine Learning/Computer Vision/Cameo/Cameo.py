@@ -50,10 +50,48 @@ class Cameo(object):
 			else:
 				self._captureManager.stopWritingVideo()
 		elif  keycode == 120: #x
+			print "x"
 			self._shouldDrawDebugRects = \
 			not self._shouldDrawDebugRects
+			print self._shouldDrawDebugRects
 		elif keycode == 27: #escape
 			self._windowManager.destoryWindow()
 
+
+class CameoDouble(Cameo):
+	def __init__(self):
+		Cameo.__init__(self)
+		self._hiddenCaptureManager = CaptureManager(cv2.VideoCapture(1))
+
+	def run(self):
+		"""run the main loop"""
+		self._windowManager.createWindow()
+		while  self._windowManager.isWindowCreated:
+			self._captureManager.enterFrame()
+			self._hiddenCaptureManager.enterFrame()
+			frame = self._captureManager.frame
+			hiddenFaces = self._hiddenCaptureManager.frame
+			self._faceTracker.update(hiddenframe)
+			faces = self._faceTracker.faces
+
+			i=0
+			while i<len(faces) and i<len(hiddenFaces):
+				rects.copyRect(hiddenframe,frame,hiddenFaces[i].faceEct,
+				faces[i].faceRect)
+				i +=1	
+
+
+			#TODO:Filter the frame
+			filters.strokeEdges(frame,frame)
+			self._curveFilter.apply(frame,frame)
+
+			if self._shouldDrawDebugRects:
+				self._faceTracker.drawDebugRects(frame)
+
+			self._captureManager.exitFrame()
+			self._hiddenCaptureManager.exitFrame()
+			self._windowManager.processEvents()
+
 if __name__ == "__main__":
 	Cameo().run()
+	#CameoDouble.run() #for double camra
