@@ -1,0 +1,2 @@
+import msvcrt
+msvcrt.putch(' ')
