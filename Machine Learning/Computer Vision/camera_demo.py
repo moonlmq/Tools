@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import cv2
 import numpy as np
 
@@ -8,6 +9,7 @@ cap = cv2.VideoCapture(0)
 # out = cv2.VideoWriter('output.avi',fourcc,20.0,(640,480))
 while True:
     ret,frame = cap.read()
+    print frame
     # gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
     # out.write(frame)
     cv2.imshow('frame',frame)
